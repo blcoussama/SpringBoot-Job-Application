@@ -37,4 +37,12 @@ public class JobServiceImplementation implements JobService {
 
     }
 
+    @Override
+    public void deleteJob(Long id) {
+        Job job = getJobById(id);
+        if (job != null) {
+            jobs.remove(job);
+        }
+    }
+
 }
