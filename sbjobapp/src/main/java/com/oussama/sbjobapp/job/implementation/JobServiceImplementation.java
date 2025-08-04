@@ -13,6 +13,8 @@ public class JobServiceImplementation implements JobService {
 
     private List<Job> jobs = new ArrayList<>();
 
+    private Long nextId = 1L; // To manage IDs for new jobs
+
     @Override
     public List<Job> findAll() {
         return jobs;
@@ -20,6 +22,7 @@ public class JobServiceImplementation implements JobService {
 
     @Override
     public void createJob(Job job) {
+        job.setId(nextId++);
         jobs.add(job);
     }
 }
