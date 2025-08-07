@@ -2,17 +2,20 @@ package com.oussama.sbjobapp.company;
 
 import java.util.List;
 
+import com.oussama.sbjobapp.job.Job;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
+@Entity
 public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
     private String name;
     private String description;
 
@@ -49,4 +52,11 @@ public class Company {
         this.description = description;
     }
 
+    public List<Job> getJobs() {
+        return jobs;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
+    }
 }
