@@ -12,11 +12,7 @@ import com.oussama.sbjobapp.job.JobService;
 @Service
 public class JobServiceImplementation implements JobService {
 
-    // private List<Job> jobs = new ArrayList<>();
-
-    JobRepository jobRepository;
-
-    private Long nextId = 1L; // To manage IDs for new jobs
+    private JobRepository jobRepository;
 
     public JobServiceImplementation(JobRepository jobRepository) {
         this.jobRepository = jobRepository;
@@ -29,7 +25,8 @@ public class JobServiceImplementation implements JobService {
 
     @Override
     public void createJob(Job job) {
-        job.setId(nextId++);
+        // Don't set ID manually - let JPA auto-generate it
+        // job.setId() should NOT be called here
         jobRepository.save(job);
     }
 
@@ -39,29 +36,32 @@ public class JobServiceImplementation implements JobService {
     }
 
     @Override
-    // This method deletes a job by its ID
     public boolean deleteJob(Long id) {
         try {
-            jobRepository.deleteById(id);
-            return true;
+            Job job = jobRepository.findById(id).orElse(null);
+            if (job == null) {
+                return false; // Job not found
+            }
+            jobRepository.delete(job);
+            return true; // ← This was missing!
         } catch (Exception e) {
-            return false;
+            return false; // Error occurred while deleting
         }
     }
 
     @Override
     public boolean updateJob(Long id, Job updatedJob) {
-        Optional<Job> optionalJob = jobRepository.findById(id);
-        if (optionalJob.isPresent()) {
-            Job job = optionalJob.get();
+        Optional<Job> jobOptional = jobRepository.findById(id);
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
             job.setTitle(updatedJob.getTitle());
             job.setDescription(updatedJob.getDescription());
             job.setMinSalary(updatedJob.getMinSalary());
             job.setMaxSalary(updatedJob.getMaxSalary());
             job.setLocation(updatedJob.getLocation());
+            jobRepository.save(job); // Save the updated job
             return true;
         }
-        return false;
+        return false; // Job not found
     }
-
 }
