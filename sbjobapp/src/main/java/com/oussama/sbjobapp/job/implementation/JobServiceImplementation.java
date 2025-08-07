@@ -2,6 +2,7 @@ package com.oussama.sbjobapp.job.implementation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -39,29 +40,27 @@ public class JobServiceImplementation implements JobService {
     }
 
     @Override
+    // This method deletes a job by its ID
     public boolean deleteJob(Long id) {
         try {
-            Job job = jobRepository.findById(id).orElse(null);
-            if (job == null) {
-                return false; // Job not found
-            }
-            jobRepository.delete(job);
+            jobRepository.deleteById(id);
+            return true;
         } catch (Exception e) {
-            return false; // Error occurred while deleting
+            return false;
         }
     }
 
     @Override
     public boolean updateJob(Long id, Job updatedJob) {
-        for (Job job : jobs) {
-            if (job.getId().equals(id)) {
-                job.setTitle(updatedJob.getTitle());
-                job.setDescription(updatedJob.getDescription());
-                job.setMinSalary(updatedJob.getMinSalary());
-                job.setMaxSalary(updatedJob.getMaxSalary());
-                job.setLocation(updatedJob.getLocation());
-                return true;
-            }
+        Optional<Job> optionalJob = jobRepository.findById(id);
+        if (optionalJob.isPresent()) {
+            Job job = optionalJob.get();
+            job.setTitle(updatedJob.getTitle());
+            job.setDescription(updatedJob.getDescription());
+            job.setMinSalary(updatedJob.getMinSalary());
+            job.setMaxSalary(updatedJob.getMaxSalary());
+            job.setLocation(updatedJob.getLocation());
+            return true;
         }
         return false;
     }
