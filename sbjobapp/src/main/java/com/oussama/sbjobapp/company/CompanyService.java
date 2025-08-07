@@ -9,7 +9,7 @@ public interface CompanyService {
 
     Company getCompanyById(Long id);
 
-    boolean deleteCompany(Long id);
-
     boolean updateCompany(Long id, Company updatedCompany);
+
+    boolean deleteCompany(Long id);
 }

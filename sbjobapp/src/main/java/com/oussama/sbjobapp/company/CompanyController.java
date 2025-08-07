@@ -43,16 +43,6 @@ public class CompanyController {
         return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCompany(@PathVariable Long id) {
-        boolean companyDeleted = companyService.deleteCompany(id);
-        if (companyDeleted) {
-            return new ResponseEntity<>("Company deleted successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
-        }
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<String> updateCompany(@PathVariable Long id, @RequestBody Company updatedCompany) {
         boolean companyUpdated = companyService.updateCompany(id, updatedCompany);
@@ -60,6 +50,16 @@ public class CompanyController {
             return new ResponseEntity<>("Company updated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCompany(@PathVariable Long id) {
+        boolean companyDeleted = companyService.deleteCompany(id);
+        if (companyDeleted) {
+            ResponseEntity.ok("Company deleted successfully");
+        } else {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company not found");
         }
     }
 }

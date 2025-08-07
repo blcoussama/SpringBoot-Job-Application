@@ -34,20 +34,6 @@ public class CompanyServiceImplementation implements CompanyService {
     }
 
     @Override
-    public boolean deleteCompany(Long id) {
-        try {
-            Company company = companyRepository.findById(id).orElse(null);
-            if (company == null) {
-                return false; // Company not found
-            }
-            companyRepository.delete(company);
-            return true;
-        } catch (Exception e) {
-            return false; // Error occurred while deleting
-        }
-    }
-
-    @Override
     public boolean updateCompany(Long id, Company updatedCompany) {
         Optional<Company> companyOptional = companyRepository.findById(id);
         if (companyOptional.isPresent()) {
@@ -56,6 +42,15 @@ public class CompanyServiceImplementation implements CompanyService {
             company.setDescription(updatedCompany.getDescription());
             companyRepository.save(company);
             return true;
+        }
+        return false; // Company not found
+    }
+
+    @Override
+    public boolean deleteCompany(Long id) {
+        if (companyRepository.existsById(id)) {
+            companyRepository.deleteById(id);
+            return true; // Company deleted successfully
         }
         return false; // Company not found
     }
