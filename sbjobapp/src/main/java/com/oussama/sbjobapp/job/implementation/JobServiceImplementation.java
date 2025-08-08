@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.oussama.sbjobapp.company.Company;
+import com.oussama.sbjobapp.company.CompanyService;
 import com.oussama.sbjobapp.job.Job;
 import com.oussama.sbjobapp.job.JobRepository;
 import com.oussama.sbjobapp.job.JobService;
@@ -13,9 +15,11 @@ import com.oussama.sbjobapp.job.JobService;
 public class JobServiceImplementation implements JobService {
 
     private JobRepository jobRepository;
+    private CompanyService companyService;
 
-    public JobServiceImplementation(JobRepository jobRepository) {
+    public JobServiceImplementation(JobRepository jobRepository, CompanyService companyService) {
         this.jobRepository = jobRepository;
+        this.companyService = companyService;
     }
 
     @Override
@@ -25,8 +29,15 @@ public class JobServiceImplementation implements JobService {
 
     @Override
     public void createJob(Job job) {
-        // Don't set ID manually - let JPA auto-generate it
-        // job.setId() should NOT be called here
+        // Validate and set company if provided
+        if (job.getCompany() != null && job.getCompany().getId() != null) {
+            Company company = companyService.getCompanyById(job.getCompany().getId());
+            if (company != null) {
+                job.setCompany(company);
+            } else {
+                throw new RuntimeException("Company with ID " + job.getCompany().getId() + " not found");
+            }
+        }
         jobRepository.save(job);
     }
 
@@ -59,9 +70,20 @@ public class JobServiceImplementation implements JobService {
             job.setMinSalary(updatedJob.getMinSalary());
             job.setMaxSalary(updatedJob.getMaxSalary());
             job.setLocation(updatedJob.getLocation());
-            jobRepository.save(job); // Save the updated job
+            
+            // Handle company update if provided
+            if (updatedJob.getCompany() != null && updatedJob.getCompany().getId() != null) {
+                Company company = companyService.getCompanyById(updatedJob.getCompany().getId());
+                if (company != null) {
+                    job.setCompany(company);
+                } else {
+                    throw new RuntimeException("Company with ID " + updatedJob.getCompany().getId() + " not found");
+                }
+            }
+            
+            jobRepository.save(job);
             return true;
         }
-        return false; // Job not found
+        return false;
     }
 }
