@@ -1,9 +1,13 @@
 package com.oussama.sbjobapp.review;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.oussama.sbjobapp.company.Company;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Review {
@@ -16,8 +20,20 @@ public class Review {
     private String description;
     private double rating;
 
+    @JsonIgnore
+    @ManyToOne
+    private Company company;
+
     public Review() {
         // Default constructor for JPA
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public Long getId() {

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oussama.sbjobapp.job.Job;
+import com.oussama.sbjobapp.review.Review;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,8 @@ public class Company {
     @OneToMany(mappedBy = "company")
     private List<Job> jobs;
 
-    // private List<Review> reviews;
+    @OneToMany(mappedBy = "company")
+    private List<Review> reviews;
 
     public Company() {
         // Default constructor for JPA
