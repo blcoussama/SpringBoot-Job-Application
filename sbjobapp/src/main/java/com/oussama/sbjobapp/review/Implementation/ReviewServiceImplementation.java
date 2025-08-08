@@ -29,6 +29,19 @@ public class ReviewServiceImplementation implements ReviewService {
     }
 
     @Override
+    public Review getReviewById(Long companyId, Long reviewId) {
+        Company company = companyService.getCompanyById(companyId);
+        if (company == null) {
+            return null; // Company not found
+        }
+        List<Review> reviews = reviewRepository.findByCompanyId(companyId);
+        return reviews.stream()
+                .filter(review -> review.getId().equals(reviewId))
+                .findFirst()
+                .orElse(null); // Return null if review not found
+    }
+
+    @Override
     public boolean addReview(Long companyId, Review review) {
         Company company = companyService.getCompanyById(companyId);
         if (company != null) {

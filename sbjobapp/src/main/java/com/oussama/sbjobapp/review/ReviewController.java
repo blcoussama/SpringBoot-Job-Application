@@ -11,18 +11,44 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.oussama.sbjobapp.company.Company;
+import com.oussama.sbjobapp.company.CompanyService;
+
 @RestController
 @RequestMapping("/companies/{companyId}")
 public class ReviewController {
     private ReviewService reviewService;
+    private CompanyService companyService;
 
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService, CompanyService companyService) {
         this.reviewService = reviewService;
+        this.companyService = companyService;
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<List<Review>> getAllReviews(@PathVariable Long companyId) {
-        return new ResponseEntity<>(reviewService.getAllReviews(companyId), HttpStatus.OK);
+    public ResponseEntity<?> getAllReviews(@PathVariable Long companyId) {
+        Company company = companyService.getCompanyById(companyId);
+        if (company == null) {
+            return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
+        }
+        
+        List<Review> reviews = reviewService.getAllReviews(companyId);
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
+    @GetMapping("/reviews/{reviewId}")
+    public ResponseEntity<?> getReviewById(@PathVariable Long companyId, @PathVariable Long reviewId) {
+        Company company = companyService.getCompanyById(companyId);
+        if (company == null) {
+            return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
+        }
+        
+        Review review = reviewService.getReviewById(companyId, reviewId);
+        if (review != null) {
+            return new ResponseEntity<>(review, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Review not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/reviews")
